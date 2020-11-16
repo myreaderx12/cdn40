@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="ahrefs-site-verification" content="b21134b1225ebf149e1266990fcc7b2bb3d9812fb4c9cdb1db0e5b103b2be6d2">
+    <link rel="profile" href="http://gmpg.org/xfn/11"/>
+    <link rel="shortcut icon" href="https://www.sqlservercentral.com/wp-content/uploads/2019/04/favicon.ico" />
+    <link rel="pingback" href="https://www.sqlservercentral.com/xmlrpc.php"/>
+    <title>How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS? &ndash; SQLServerCentral</title>
+
+            <meta name="wp:id" content="3796899" />
+        
+<!-- This site is optimized with the Yoast SEO plugin v11.6 - https://yoast.com/wordpress/plugins/seo/ -->
+<meta name="description" content="This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you are coming from SSIS background, you know a piece of SQL"/>
+<link rel="canonical" href="https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis" />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS? &ndash; SQLServerCentral" />
+<meta property="og:description" content="This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you are coming from SSIS background, you know a piece of SQL" />
+<meta property="og:url" content="https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis" />
+<meta property="og:site_name" content="SQLServerCentral" />
+<meta property="article:tag" content="ADF" />
+<meta property="article:tag" content="azure" />
+<meta property="article:tag" content="Case When" />
+<meta property="article:tag" content="SQL" />
+<meta property="article:tag" content="ssis" />
+<meta property="article:section" content="Azure Data Factory" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you are coming from SSIS background, you know a piece of SQL" />
+<meta name="twitter:title" content="How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS? &ndash; SQLServerCentral" />
+<meta name="twitter:site" content="@sqlservercentrl" />
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/-jpI7d4JxPCg/X4X9s0L0nRI/AAAAAAAAKIQ/5UUaRd7aSD0TM5VU6i5BP59yZOwLkSqHgCLcBGAsYHQ/Case%2Bwhen%2Bin%2BSSIS.PNG" />
+<meta name="twitter:creator" content="@paulswengrr" />
+<script type='application/ld+json' class='yoast-schema-graph yoast-schema-graph--main'>{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sqlservercentral.com/#organization","name":"SQLServerCentral","url":"https://www.sqlservercentral.com/","sameAs":["https://twitter.com/sqlservercentrl"],"logo":{"@type":"ImageObject","@id":"https://www.sqlservercentral.com/#logo","url":"https://www.sqlservercentral.com/wp-content/uploads/2019/05/ssc-logo.png","width":60,"height":53,"caption":"SQLServerCentral"},"image":{"@id":"https://www.sqlservercentral.com/#logo"}},{"@type":"WebSite","@id":"https://www.sqlservercentral.com/#website","url":"https://www.sqlservercentral.com/","name":"SQLServerCentral","publisher":{"@id":"https://www.sqlservercentral.com/#organization"},"potentialAction":{"@type":"SearchAction","target":"https://www.sqlservercentral.com/?s={search_term_string}","query-input":"required name=search_term_string"}},{"@type":"ImageObject","@id":"https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis#primaryimage","url":"https://lh3.googleusercontent.com/-jpI7d4JxPCg/X4X9s0L0nRI/AAAAAAAAKIQ/5UUaRd7aSD0TM5VU6i5BP59yZOwLkSqHgCLcBGAsYHQ/Case%2Bwhen%2Bin%2BSSIS.PNG"},{"@type":"WebPage","@id":"https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis#webpage","url":"https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis","inLanguage":"en-GB","name":"How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS? &ndash; SQLServerCentral","isPartOf":{"@id":"https://www.sqlservercentral.com/#website"},"primaryImageOfPage":{"@id":"https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis#primaryimage"},"datePublished":"2020-11-12T00:00:20+00:00","dateModified":"2020-11-11T19:56:53+00:00","description":"This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you are coming from SSIS background, you know a piece of SQL"}]}</script>
+<!-- / Yoast SEO plugin. -->
+
+<link rel='dns-prefetch' href='//cdn.rawgit.com' />
+<link rel='dns-prefetch' href='//cdnjs.cloudflare.com' />
+<link rel='dns-prefetch' href='//www.sqlservercentral.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="SQLServerCentral &raquo; Feed" href="https://www.sqlservercentral.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="SQLServerCentral &raquo; Comments Feed" href="https://www.sqlservercentral.com/comments/feed" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11.2.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11.2.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.sqlservercentral.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.1.1"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<!-- managing ads with Advanced Ads – https://wpadvancedads.com/ --><script>
+					advanced_ads_ready=function(){var fns=[],listener,doc=typeof document==="object"&&document,hack=doc&&doc.documentElement.doScroll,domContentLoaded="DOMContentLoaded",loaded=doc&&(hack?/^loaded|^c/:/^loaded|^i|^c/).test(doc.readyState);if(!loaded&&doc){listener=function(){doc.removeEventListener(domContentLoaded,listener);window.removeEventListener("load",listener);loaded=1;while(listener=fns.shift())listener()};doc.addEventListener(domContentLoaded,listener);window.addEventListener("load",listener)}return function(fn){loaded?setTimeout(fn,0):fns.push(fn)}}();
+			</script><style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='wp-block-library-css'  href='https://www.sqlservercentral.com/wp-includes/css/dist/block-library/style.min.css?ver=5.1.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='wp-block-library-css'  href='https://www.sqlservercentral.com/wp-includes/css/dist/block-library/style.min.css?ver=5.1.1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-widgets-mini-teaser-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-widgets/css/mini-teaser.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-widgets-mini-teaser-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-widgets/css/mini-teaser.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-bbp-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-bbp/css/ssc-bbp.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-bbp-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-bbp/css/ssc-bbp.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-briefcase-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-briefcase/css/ssc-briefcase.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-briefcase-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-briefcase/css/ssc-briefcase.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-contributions-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-contributions/css/contributions.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-contributions-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-contributions/css/contributions.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-leaderboard-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-leaderboard/css/leaderboard.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-leaderboard-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-leaderboard/css/leaderboard.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-related-forum-topics-top-comments-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-related-forum-topics/css/top-comments.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-related-forum-topics-top-comments-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-related-forum-topics/css/top-comments.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-social-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-social/css/icons.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-social-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-social/css/icons.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-star-ratings-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-star-ratings/css/ssc-star-ratings.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-star-ratings-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-star-ratings/css/ssc-star-ratings.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-syntax-highlighting-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-syntax-highlighting/css/syntax-highlighting.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-syntax-highlighting-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-syntax-highlighting/css/syntax-highlighting.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-syntax-highlighting-legacy-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-syntax-highlighting/css/legacy.min.css?ver=2020-06-03' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-syntax-highlighting-legacy-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-syntax-highlighting/css/legacy.min.css?ver=2020-06-03' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='featherlight-css-css'  href='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css?ver=5.1.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='featherlight-css-css'  href='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css?ver=5.1.1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc-lightbox-css-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-lightbox/css/ssc-lightbox.min.css?ver=5.1.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc-lightbox-css-css'  href='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-lightbox/css/ssc-lightbox.min.css?ver=5.1.1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='bbp-default-css'  href='https://www.sqlservercentral.com/wp-content/plugins/bbpress/templates/default/css/bbpress.css?ver=2.5.14-6684' type='text/css' media='screen' />
+<noscript><link rel='stylesheet' id='bbp-default-css'  href='https://www.sqlservercentral.com/wp-content/plugins/bbpress/templates/default/css/bbpress.css?ver=2.5.14-6684' type='text/css' media='screen' /></noscript>
+
+<link rel='stylesheet' id='bbp-ssc-css'  href='https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/bbpress/bbpress.min.css?ver=2.5.14-6684' type='text/css' media='screen' />
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='gglcptch-css'  href='https://www.sqlservercentral.com/wp-content/plugins/google-captcha/css/gglcptch.css?ver=1.39' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='gglcptch-css'  href='https://www.sqlservercentral.com/wp-content/plugins/google-captcha/css/gglcptch.css?ver=1.39' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='hm_bbpui-css'  href='https://www.sqlservercentral.com/wp-content/plugins/image-upload-for-bbpress/css/bbp-image-upload.css?ver=5.1.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='hm_bbpui-css'  href='https://www.sqlservercentral.com/wp-content/plugins/image-upload-for-bbpress/css/bbp-image-upload.css?ver=5.1.1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='searchandfilter-css'  href='https://www.sqlservercentral.com/wp-content/plugins/search-filter/style.css?ver=1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='searchandfilter-css'  href='https://www.sqlservercentral.com/wp-content/plugins/search-filter/style.css?ver=1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='ssc2018-googlefonts-css'  href='//fonts.googleapis.com/css?family=Open+Sans%3A400%2C600&#038;ver=5.1.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='ssc2018-googlefonts-css'  href='//fonts.googleapis.com/css?family=Open+Sans%3A400%2C600&#038;ver=5.1.1' type='text/css' media='all' /></noscript>
+
+<link rel='stylesheet' id='ssc2018-stylesheet-css'  href='https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/css/style.css?ver=2020-06-03' type='text/css' media='all' />
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='d4p-bbattachments-css-css'  href='https://www.sqlservercentral.com/wp-content/plugins/gd-bbpress-attachments/css/front.css?ver=3.1_b2302_free' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='d4p-bbattachments-css-css'  href='https://www.sqlservercentral.com/wp-content/plugins/gd-bbpress-attachments/css/front.css?ver=3.1_b2302_free' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='simple-favorites-css'  href='https://www.sqlservercentral.com/wp-content/plugins/favorites/assets/css/favorites.css?ver=2.3.1' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='simple-favorites-css'  href='https://www.sqlservercentral.com/wp-content/plugins/favorites/assets/css/favorites.css?ver=2.3.1' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='wp-user-avatar-css'  href='https://www.sqlservercentral.com/wp-content/plugins/wp-user-avatar-pro/assets/css/wp-user-avatar.css?ver=4.1.8' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='wp-user-avatar-css'  href='https://www.sqlservercentral.com/wp-content/plugins/wp-user-avatar-pro/assets/css/wp-user-avatar.css?ver=4.1.8' type='text/css' media='all' /></noscript>
+
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" id='jcrop-css'  href='https://www.sqlservercentral.com/wp-includes/js/jcrop/jquery.Jcrop.min.css?ver=0.9.12' type='text/css' media='all' />
+<noscript><link rel='stylesheet' id='jcrop-css'  href='https://www.sqlservercentral.com/wp-includes/js/jcrop/jquery.Jcrop.min.css?ver=0.9.12' type='text/css' media='all' /></noscript>
+
+<script type='text/javascript' src='https://www.sqlservercentral.com/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='https://www.sqlservercentral.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' defer src='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js?ver=5.1.1'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-lightbox/js/ssc-lightbox.min.js?ver=5.1.1'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/image-upload-for-bbpress/js/bbp-image-upload.js?ver=5.1.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var favorites_data = {"ajaxurl":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php","nonce":"745d720c96","favorite":"Add to briefcase <i class=\"sf-icon-star-empty\"><\/i>","favorited":"Remove from briefcase <i class=\"sf-icon-star-full\"><\/i>","includecount":"","indicate_loading":"","loading_text":"Loading","loading_image":"","loading_image_active":"","loading_image_preload":"","cache_enabled":"1","button_options":{"button_type":"custom","custom_colors":false,"box_shadow":false,"include_count":false,"default":{"background_default":false,"border_default":false,"text_default":false,"icon_default":false,"count_default":false},"active":{"background_active":false,"border_active":false,"text_active":false,"icon_active":false,"count_active":false}},"authentication_modal_content":"<p>Please login to add favorites.<\/p><p><a href=\"#\" data-favorites-modal-close>Dismiss this notice<\/a><\/p>","authentication_redirect":"","dev_mode":"","logged_in":"","user_id":"0","authentication_redirect_url":"https:\/\/www.sqlservercentral.com\/wp-login.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/favorites/assets/js/favorites.min.js?ver=2.3.1'></script>
+<script type='text/javascript' src='https://www.sqlservercentral.com/wp-includes/js/jcrop/jquery.Jcrop.min.js?ver=0.9.12'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/wp-user-avatar-pro/assets/js/webcam.js?ver=4.1.8'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var wpua_imgloader_vars = {"url":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php","WPUA_URL":"https:\/\/www.sqlservercentral.com\/wp-content\/plugins\/wp-user-avatar-pro\/","WPUA_MEDIA":"false","wpua_webcam":"true","wpua_string":{"file_type_error":"File Type is not valid.","file_type_error_description":"Valid File Type is jpeg, png and gif.","file_size_error":"File Size is too big","file_size_error_description":"File uploading limits:  Size 8.00 MB","no_image":"Oops! Seems you didn't select any image.","no_image_instruction":"It's easy. Click within dotted area.","upload_image":"Upload Image","media_uploader":"Media Uploader","drop_instruction":"Drop image here or click to upload.","control_instruction":"Select your image, crop and save it.","close":"Close","save":"Save Image","capture_image":"Capture Image","webcam_on":"Use Camera","mediamanager_on_title":"Media Manager is turned ON.","mediamanager_on_instruction":"Click within dotted area to choose image from media manager"},"restriction":{"strickly_resize":true,"max_file_size":"8388608","max_file_width":0,"max_file_height":0,"wp_user_avatar_thumbnail_w":false,"wp_user_avatar_thumbnail_h":false}};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/wp-user-avatar-pro/assets/js/wpua-imgloader.js?ver=4.1.8'></script>
+<link rel='https://api.w.org/' href='https://www.sqlservercentral.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.sqlservercentral.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.sqlservercentral.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 5.1.1" /><meta name="projectnami:version" content="2.1.1" />
+<link rel='shortlink' href='https://www.sqlservercentral.com/?p=3796899' />
+<link rel="alternate" type="application/json+oembed" href="https://www.sqlservercentral.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.sqlservercentral.com%2Farticles%2Fhow-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis" />
+<link rel="alternate" type="text/xml+oembed" href="https://www.sqlservercentral.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.sqlservercentral.com%2Farticles%2Fhow-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&#038;format=xml" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-90206-6"></script>
+<script>
+    const sites = [
+        'www.red-gate.com',
+        'www.sqlservercentral.com',
+        'documentation.red-gate.com',
+        'sqlmonitormetrics.red-gate.com'
+    ];
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());  
+     gtag('config', 'UA-90206-6');
+     gtag('config', 'UA-90206-169', { 'linker': { 'domains': sites } });
+</script><script type="text/javascript">
+            /* <![CDATA[ */
+            var gdbbPressAttachmentsInit = {
+                max_files: 10            };
+            /* ]]> */
+        </script>			<style>
+			.avatar_overlays p  {
+ 				background: rgba(0, 0, 0, );
+ 				color: ;
+				}
+			.wpuap_tooltip:hover .wpuap_tooltip_content {
+		    display: inline;
+		    position: absolute;
+		    color: ;
+		    border: 1px solid ;
+		    background: 			}
+
+			.avatar_container [class^=icon-],
+			.avatar_container [class*=" icon-"] {
+			    color:  !important;
+			}
+
+			#ci-modal,.ci_controls {
+			    background-color:  !important;
+			}
+						</style>
+		</head>
+
+<body class="ssc_article-template-default single single-ssc_article postid-3796899" itemscope itemtype="http://schema.org/WebPage" >
+
+<div id="page" class="hfeed site">
+
+    <!-- HEADER -->
+    <header class="site-header band header--primary">
+        <nav>
+            <div class="header--primary__nav__inner">
+                <a href="https://www.sqlservercentral.com/" title="SQLServerCentral" rel="home" class="header--primary__app-logo-container"><img src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/header/ssc-logo.svg" alt="" /></a>
+                <a href="https://www.sqlservercentral.com/" title="SQLServerCentral" rel="home" class="header--primary__app-name-container "><img src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/header/ssc.svg" alt="" /></a>
+                <ul class="js-dropdown hide-on-medium">
+                    <li id="menu-item-7" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-7"><a href="/articles">Articles</a></li>
+<li id="menu-item-8" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-8"><a href="/editorials">Editorials</a></li>
+<li id="menu-item-9" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9"><a href="/stairways">Stairways</a></li>
+<li id="menu-item-10" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-10"><a href="/forums">Forums</a>
+<ul class="sub-menu">
+	<li id="menu-item-16" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-16"><a title="Top level for all forums" href="/forums">Forums home</a></li>
+	<li id="menu-item-3052410" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3052410"><a title="Threads listed in reverse order by the most recent reply" href="/forums/view/topics-freshness">Active threads</a></li>
+	<li id="menu-item-18" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-18"><a title="Threads listed in reverse order by the creation date" href="/forums/view/latest-topics">Latest topics</a></li>
+	<li id="menu-item-17" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-17"><a title="Most replies in the last 24 hours" href="/forums/view/popular">Most popular</a></li>
+	<li id="menu-item-3644583" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3644583"><a href="/totalscores#leaderboard-forum">Leaderboard</a></li>
+</ul>
+</li>
+<li id="menu-item-11" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11"><a href="/scripts">Scripts</a></li>
+<li id="menu-item-12" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12"><a href="/questions">QotD</a></li>
+<li id="menu-item-13" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-13"><a href="/books">Books</a></li>
+<li id="menu-item-14" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-14"><a href="https://ask.sqlservercentral.com/">Ask SSC</a></li>
+<li id="menu-item-15" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15"><a href="/blogs">Blogs</a></li>
+                </ul>
+
+                <span class="header--primary__site-tools">
+                    <ul>
+                        <li class="hide-on-medium"><a href="/contributions"><span class="icon--edit"></span>Write for us</a></li>
+                        <li class="hide-on-max show-on-medium"><a href="/search" class="header--primary__icon icon--search" title="Search"></a></li>
+                        <li class="hide-on-max show-on-large"><a href="" class="header--primary__icon header--primary__menu-button">Menu</a></li>
+                    </ul>
+                    <ul class="js-dropdown dropdown hide-on-small">
+                                                    <li><a href="https://www.sqlservercentral.com/wp-login.php?action=register">Register</a></li>
+                            <li><a href="https://www.sqlservercentral.com/wp-login.php?redirect_to=https%3A%2F%2Fwww.sqlservercentral.com%2Farticles%2Fhow-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis">Login</a></li>
+                                            </ul>
+                </span>
+            </div>
+
+            <ul class="header--primary__menu--mobile js-dropdown">
+                <li class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-7"><a href="/articles">Articles</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-8"><a href="/editorials">Editorials</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9"><a href="/stairways">Stairways</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-10"><a href="/forums">Forums</a>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-16"><a title="Top level for all forums" href="/forums">Forums home</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3052410"><a title="Threads listed in reverse order by the most recent reply" href="/forums/view/topics-freshness">Active threads</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-18"><a title="Threads listed in reverse order by the creation date" href="/forums/view/latest-topics">Latest topics</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-17"><a title="Most replies in the last 24 hours" href="/forums/view/popular">Most popular</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3644583"><a href="/totalscores#leaderboard-forum">Leaderboard</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11"><a href="/scripts">Scripts</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12"><a href="/questions">QotD</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-13"><a href="/books">Books</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-14"><a href="https://ask.sqlservercentral.com/">Ask SSC</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15"><a href="/blogs">Blogs</a></li>
+
+                                <li class="menu-item"><a href="/contributions">Write for us</a></li>
+
+                                    <li><a href="https://www.sqlservercentral.com/wp-login.php?action=register">Register</a></li>
+                    <li><a href="https://www.sqlservercentral.com/wp-login.php?redirect_to=https%3A%2F%2Fwww.sqlservercentral.com%2Farticles%2Fhow-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis">Login</a></li>
+                            </ul>
+        </nav>
+    </header>
+    <!-- /HEADER -->
+
+    <!-- SECONDARY NAV -->
+    <nav class="background-color--grey--1 border-bottom border-color--grey--3 nav-secondary">
+        <div class="band__inner-container border-left border-right border-color--grey--3 padded--none">
+            <form class="search display--inline border-left border-right border-color--grey--3 padded-right--tight float-right" action="https://www.sqlservercentral.com/" method="get">
+                <input type="text" name="s" placeholder="Search..." value=""/>
+                <input type="image" src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/nav-secondary/search-icon.svg"/>
+            </form>
+        </div>
+    </nav>
+    <!-- /SECONDARY NAV -->
+
+    
+    
+<!-- single.php -->
+    <!-- template-parts/content-single.php -->
+<div class="band">
+    <div class="band__inner-container padded--tight--small grid" itemscope itemtype="http://schema.org/Article" datePublished="">
+
+        <div itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+            <div itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+                <meta itemprop="url" content="https://www.sqlservercentral.com/wp-content/uploads/2019/05/ssc-logo.png">
+                <meta itemprop="width" content="60"> <meta itemprop="height" content="53">
+            </div>
+            <meta itemprop="name" content="SQLServerCentral.com">
+        </div>
+
+        <meta itemprop="mainEntityOfPage" content="https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis">
+
+        <div class="grid__col grid__col--span-2-of-12 hide-on-small content-single-sidebar-left">
+            
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.svg" alt="" /></a>
+    </div>
+<img class="hidden" itemprop="image" src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.png" alt="" />        </div>
+
+        <div class="grid__col grid__col--span-8-of-12">
+            <div class="padded-h spaced-bottom padded-h--none--small">
+                <h1 class="text--bold" itemprop="name">How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?</h1>
+                <meta itemprop="headline" content="How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?">
+                <div class="meta spaced-bottom--tight">
+                    <p class="gamma">
+                        <a href="https://www.sqlservercentral.com/author/diponkar-paul" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">diponkar.paul</span></span></a>,
+                        <span itemprop="datePublished"><span itemprop="dateCreated">2020-11-12</span></span>
+                        <meta itemprop="dateModified" content="November 11, 2020">
+                        <br />
+                    </p>
+                </div>
+
+                <div class="content" itemprop="articleBody">
+                    <p>This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you are coming from SSIS background, you know a piece of SQL statement will do the task. However let's see how do it in SSIS and the very same thing can be achieved in ADF.</p>
+<h2>Problem statement</h2>
+<p>For my simple scenario, when the PortfolioTypeCode has a value of either 'Mutual Fund' or 'Pooled Fund', my package should return a 1, otherwise it should return 0.</p>
+<p>In SSIS, under data flow you will have an OLEDB source, like shown below in Fig 1.</p>
+<div class="separator"><a href="https://lh3.googleusercontent.com/-jpI7d4JxPCg/X4X9s0L0nRI/AAAAAAAAKIQ/5UUaRd7aSD0TM5VU6i5BP59yZOwLkSqHgCLcBGAsYHQ/Case%2Bwhen%2Bin%2BSSIS.PNG"><img src="data:image/gif;base64,R0lGODlhAQABAPAAAPLy8v///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="https://lh3.googleusercontent.com/-jpI7d4JxPCg/X4X9s0L0nRI/AAAAAAAAKIQ/5UUaRd7aSD0TM5VU6i5BP59yZOwLkSqHgCLcBGAsYHQ/Case%2Bwhen%2Bin%2BSSIS.PNG" data-lazy-load alt="" width="320" height="187" data-original-height="517" data-original-width="885" /></a></div>
+<div class="separator"><strong>Fig 1: SSIS OLEDB source</strong></div>
+<p>We then open the OLEDB source and then write a T-SQL command, like the one below and we are done:</p>
+<pre class="prettyprint  lang-mssql">SELECT Col1,
+          CASE WHEN PortfolioCode IN('Mutual fund','Pooled fund')
+            THEN 1
+            ELSE 0
+END  IsFund,
+Col2
+From Table1</pre>
+<div class="separator"><a href="https://lh3.googleusercontent.com/-h-MFN6QUqSc/X4X97zfr7tI/AAAAAAAAKIU/Vk0syKrrjH4_9eGxo5akNPckhgIH9LpZQCLcBGAsYHQ/Case%2Bstatement%2BSQL%2Bcode.PNG"><img src="data:image/gif;base64,R0lGODlhAQABAPAAAPLy8v///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="https://lh3.googleusercontent.com/-h-MFN6QUqSc/X4X97zfr7tI/AAAAAAAAKIU/Vk0syKrrjH4_9eGxo5akNPckhgIH9LpZQCLcBGAsYHQ/Case%2Bstatement%2BSQL%2Bcode.PNG" data-lazy-load alt="" width="320" height="235" data-original-height="498" data-original-width="679" /></a></div>
+<div class="separator"><strong>Fig 2: CASE WHEN under SQL command in SSIS</strong></div>
+<p><b>How do you implement this in ADF?</b></p>
+<p>In ADF, to achieve the same goal, you need to use Expressions. ADF has the very same concept of a data flow, like SSIS. In the data flow, after the source dataset is established you can add a 'Derived Column' activity, shown below in Fig 3:</p>
+<div class="separator"><a href="https://lh3.googleusercontent.com/-XX93e8lETkk/X4YG_7XQ5-I/AAAAAAAAKIs/p8yZ0M2PYZIH9QHQwfvdILNPayw-yz2CQCLcBGAsYHQ/image.png"><img src="data:image/gif;base64,R0lGODlhAQABAPAAAPLy8v///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="https://lh3.googleusercontent.com/-XX93e8lETkk/X4YG_7XQ5-I/AAAAAAAAKIs/p8yZ0M2PYZIH9QHQwfvdILNPayw-yz2CQCLcBGAsYHQ/image.png" data-lazy-load alt="" width="320" height="216" data-original-height="648" data-original-width="959" /></a></div>
+<div class="separator"><strong>Fig 3: Adding a derived column</strong></div>
+<p>Now you can give a the new column a name and then add the expression shown in Fig 4.</p>
+<div class="separator"><a href="https://lh3.googleusercontent.com/-tg8UUqJNt-c/X4YHyldfIqI/AAAAAAAAKI0/1zChBt4Ek248HNQMruxlGaQPBBcSAsEmwCLcBGAsYHQ/image.png"><img src="data:image/gif;base64,R0lGODlhAQABAPAAAPLy8v///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="https://lh3.googleusercontent.com/-tg8UUqJNt-c/X4YHyldfIqI/AAAAAAAAKI0/1zChBt4Ek248HNQMruxlGaQPBBcSAsEmwCLcBGAsYHQ/w400-h193/image.png" data-lazy-load alt="" width="400" height="193" data-original-height="486" data-original-width="1010" /></a></div>
+<div class="separator"><strong>Fig 4: Derived column expression</strong></div>
+<p>&nbsp;</p>
+<p>As you have seen at the beginning of the article When you write CASE statement in TSQL , your syntax look like below:</p>
+<pre class="prettyprint  lang-mssql">CASE WHEN PortfolioCode IN('Mutual fund','Pooled fund')
+            THEN 1
+         ELSE 0
+END  IsFund</pre>
+<p>&nbsp;</p>
+<p>However, when it comes to ADF expression, then it needs to translate like below:</p>
+<pre class="prettyprint  lang-mssql">  case( PortfolioTypeCode=='Mutual Fund',1,
+       PortfolioTypeCode=='Pooled Fund',1,0)</pre>
+<p>&nbsp;</p>
+<p>Let's talk about in details about case expression in ADF, the case expression takes 3 arguments:  case(condition,true_expression,false_expression). From the above code, when  PortfolioTypeCode=='Mutual Fund', if the condition is True, then it will return 1. If this is false, we have added another condition: PortfolioTypeCode=='Pooled Fund'. If this condition is True, then the expression will return 1. If both conditions are false, then the expression will return 0.</p>
+<p>We have explained the case expression above and the below Fig 5 shows, how the code look like in ADF.</p>
+<div class="separator"><a href="https://lh3.googleusercontent.com/-m03mDmHdOgc/X4YGHEkC4NI/AAAAAAAAKIk/NkRjj27bQq8dIlqHuSkLtiMdijOvuVMhQCLcBGAsYHQ/CASE%2Bin%2BADF.PNG"><img src="data:image/gif;base64,R0lGODlhAQABAPAAAPLy8v///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="https://lh3.googleusercontent.com/-m03mDmHdOgc/X4YGHEkC4NI/AAAAAAAAKIk/NkRjj27bQq8dIlqHuSkLtiMdijOvuVMhQCLcBGAsYHQ/w400-h190/CASE%2Bin%2BADF.PNG" data-lazy-load alt="" width="400" height="190" data-original-height="491" data-original-width="1031" /></a></div>
+<div><strong>Fig 5: case expression in ADF</strong></div>
+<p>In SSIS whenever you work with data flow and choose OLEDB source, you can write T-SQL code since underneath it's SQL engine, however; for ADF data flow, spark engine is running behind the scene. ADF data flow expression is pretty much powerful, please find more details about the case expression from <a href="https://docs.microsoft.com/en-us/azure/data-factory/data-flow-expression-functions#case">Microsoft document</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+                </div>
+
+                                                    
+                                    
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+                
+                                                    
+                                                    
+                                                    
+            </div>
+        </div>
+
+        <div class="grid__col grid__col--span-2-of-12 content-single-sidebar">
+            <div class="sidebar">
+    <aside class="sidebar__widget sidebar__widget--advads_ad_widget-4 sqlse-widget clearfix"><a href="https://www.red-gate.com/products/sql-development/sql-prompt/?utm_source=ssc&#038;utm_medium=pubad&#038;utm_campaign=sqlprompt&#038;utm_content=sqlprompt10-subscription"><img   src='https://www.sqlservercentral.com/wp-content/uploads/2020/10/sidebar-sqlprompt10-subscription.png' alt=''  width="100%"  style="max-width:100%;"/></a></aside></div>            <!-- template-parts/content-single-sidebar-meta.php -->
+
+    <div class="spaced-bottom">
+        
+        <div data-target="ssc-visitor-counter">
+            <!-- Target for ssc-visitor-counter.js, which dynamically injects
+            right here visitor stats for the current post or page. -->
+        </div>
+    </div>
+
+    <div class="spaced-bottom">
+        <h2 class="gamma">Rate</h2>
+        
+<div class="ssc-star-rating ssc-star-rating--interactive" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" data-target="ssc-star-rating" data-post="3796899">
+
+            <meta itemprop="ratingValue" content="4.5" />
+        <meta itemprop="ratingCount" content="2" />
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                    </div>
+
+        
+                    <div class="ssc-star-rating__vote" hidden style="display: none;">
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                            </div>
+            </div>
+
+            <p class="ssc-star-rating__stats">
+            <span data-target="ssc-star-rating-score">4.5</span>
+            (<span data-target="ssc-star-rating-count">2</span>)
+        </p>
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+    </div>
+
+    <div class="spaced-bottom">
+        
+<!-- template-parts/ssc-social-icons.php -->
+<h2 class="gamma">Share</h2>
+<ul class="sharing list--horizontal">
+            <li><a class="sharing__link sharing__link--email" title="Email" target="" href="mailto:?subject=Article on https://www.sqlservercentral.com: How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?&body=I found this great article on https://www.sqlservercentral.com.%0D%0A%0D%0A
+It's called How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?.%0D%0A%0D%0A
+You can find it here http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis."></a></li>
+            <li><a class="sharing__link sharing__link--facebook" title="Share on Facebook" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&quote=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?"></a></li>
+            <li><a class="sharing__link sharing__link--twitter" title="Tweet" target="_blank" href="https://twitter.com/intent/tweet?source=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&text=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?:%20http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis"></a></li>
+            <li><a class="sharing__link sharing__link--linked-in" title="Share on LinkedIn" target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&title=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?&summary=This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you&source=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis"></a></li>
+            <li><a class="sharing__link sharing__link--print" title="Print" target="" href="javascript:window.print && window.print();"></a></li>
+    </ul>
+<!-- / template-parts/ssc-social-icons.php -->
+    </div>
+
+
+
+        <div class="post__tags spaced-bottom">
+            <h2 class="gamma">Categories</h2>
+            <ul class="list--bare">
+                                                        <li><a href="https://www.sqlservercentral.com/categories/azure-data-factory" class="label background-color--blue--1 color--blue--8">Azure Data Factory</a></li>
+                                                        <li><a href="https://www.sqlservercentral.com/categories/etl-ssis-azure-data-factory" class="label background-color--blue--1 color--blue--8">ETL/SSIS/Azure Data Factory</a></li>
+                            </ul>
+        </div>
+    
+    <div class="post__tags spaced-bottom">
+        <h2 class="gamma">Tags</h2>
+        <ul class="list--bare">
+                                            <li><a href="https://www.sqlservercentral.com/tags/adf" class="label background-color--blue--1 color--blue--8">ADF</a></li>
+                                            <li><a href="https://www.sqlservercentral.com/tags/azure" class="label background-color--blue--1 color--blue--8">azure</a></li>
+                                            <li><a href="https://www.sqlservercentral.com/tags/case-when" class="label background-color--blue--1 color--blue--8">Case When</a></li>
+                                            <li><a href="https://www.sqlservercentral.com/tags/sql" class="label background-color--blue--1 color--blue--8">SQL</a></li>
+                                            <li><a href="https://www.sqlservercentral.com/tags/ssis" class="label background-color--blue--1 color--blue--8">ssis</a></li>
+                    </ul>
+    </div>
+
+<meta itemprop="keywords" content="Azure Data Factory, ETL/SSIS/Azure Data Factory, ADF, azure, Case When, SQL, ssis">
+
+<!-- / template-parts/content-single-sidebar-meta.php -->
+        </div>
+    </div>
+</div>
+
+<!-- template-parts/content-single-meta.php -->
+<div class="band content-single-meta">
+    <div class="band__inner-container padded--tight--small padded-top--none grid">
+        <div class="grid__row spaced-bottom">
+            <div class="grid__col grid__col--span-10-of-12 grid__col--push-2-of-12">
+                <div class="padded-left padded-h--none--small clearfix">
+
+                                            <p><a href="https://www.sqlservercentral.com/forums/topic/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis"><strong>Join the discussion and add your comment</strong></a></p>                    
+                                            
+        <div data-target="ssc-related-forum-topics-top-comments">
+            <!-- Target for ssc-related-forum-topics/top-comments.js. -->
+        </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="grid__row hide-on-small">
+            <div class="grid__col grid__col--span-10-of-12 grid__col--push-2-of-12">
+                <div class="padded-left padded-h--none--small clearfix">
+
+                                            <div class="grid__col grid__col--span-3-of-12">
+                            
+<!-- template-parts/ssc-social-icons.php -->
+<h2 class="gamma">Share</h2>
+<ul class="sharing list--horizontal">
+            <li><a class="sharing__link sharing__link--email" title="Email" target="" href="mailto:?subject=Article on https://www.sqlservercentral.com: How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?&body=I found this great article on https://www.sqlservercentral.com.%0D%0A%0D%0A
+It's called How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?.%0D%0A%0D%0A
+You can find it here http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis."></a></li>
+            <li><a class="sharing__link sharing__link--facebook" title="Share on Facebook" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&quote=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?"></a></li>
+            <li><a class="sharing__link sharing__link--twitter" title="Tweet" target="_blank" href="https://twitter.com/intent/tweet?source=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&text=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?:%20http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis"></a></li>
+            <li><a class="sharing__link sharing__link--linked-in" title="Share on LinkedIn" target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis&title=How to simulate Case statement in Azure Data Factory (ADF) compared with SSIS?&summary=This post will describe how you use a CASE statement in Azure Data Factory (ADF). If you&source=http://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis"></a></li>
+            <li><a class="sharing__link sharing__link--print" title="Print" target="" href="javascript:window.print && window.print();"></a></li>
+    </ul>
+<!-- / template-parts/ssc-social-icons.php -->
+                        </div>
+                    
+                                            <div class="grid__col grid__col--span-3-of-12">
+                            <h2 class="gamma">Rate</h2>
+                            
+<div class="ssc-star-rating ssc-star-rating--interactive" data-target="ssc-star-rating" data-post="3796899">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                    </div>
+
+        
+                    <div class="ssc-star-rating__vote" hidden style="display: none;">
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                                                        <span class="ssc-star-rating__star ssc-star-rating__star--vote">★</span>
+                            </div>
+            </div>
+
+            <p class="ssc-star-rating__stats">
+            <span data-target="ssc-star-rating-score">4.5</span>
+            (<span data-target="ssc-star-rating-count">2</span>)
+        </p>
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/how-to-simulate-case-statement-in-azure-data-factory-adf-compared-with-ssis">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+                        </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / template-parts/content-single-meta.php -->
+
+
+<!-- template-parts/ssc-related-content-list.php -->
+<div class="band border-top border-color--grey--3 related-content">
+    <div class="band__inner-container grid">
+        <div class="grid__row">
+            <div class="grid__col grid__col--span-10-of-12 grid__col--push-2-of-12">
+                <h1 class="text--normal padded-h padded-h--none--small spaced-bottom">Related content</h1>
+            </div>
+        </div>
+
+        
+<!-- template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/content-loop.php -->
+<article class="grid__row spaced-bottom post-listing__post">
+
+        <div class="grid__col grid__col--span-2-of-12">
+        
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/articles/downloading-a-csv-file-from-an-api-using-azure-data-factory" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.svg" alt="" /></a>
+    </div>
+    </div>
+
+    
+    <div class="grid__col grid__col--span-8-of-12">
+        <div class="padded-h padded-h--none--small">
+            <h1 class="beta">
+                                    <a href="https://www.sqlservercentral.com/articles/downloading-a-csv-file-from-an-api-using-azure-data-factory">Downloading a CSV File from an API Using Azure Data Factory</a>
+                            </h1>
+
+                            <div class="post-listing__taxonomies">
+                    <ul class="post-listing__author list--horizontal list--bare display--inline">
+                        <li>by <a href="https://www.sqlservercentral.com/author/meaganl" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">Meagan Longoria</span></span></a></li>
+                    </ul>
+
+                                            <ul class="post-listing__sources list--horizontal list--bare display--inline">
+                            <li><a href="https://www.sqlservercentral.com">SQLServerCentral</a></li>
+                        </ul>
+                    
+                                            <ul class="post-listing__categories list--horizontal list--bare display--inline">
+                                                            <li><a href="https://www.sqlservercentral.com/categories/azure-data-factory">Azure Data Factory</a></li>
+                                                            <li><a href="https://www.sqlservercentral.com/categories/etl-ssis-azure-data-factory">ETL/SSIS/Azure Data Factory</a></li>
+                                                    </ul>
+                    
+                                    </div>
+            
+            <p>In this article, learn how to use Azure Data Factory with a REST API to download files.</p>
+
+                            
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+            
+        </div>
+    </div>
+
+                        <div class="grid__col grid__col--span-2-of-12">
+                
+<div class="ssc-star-rating">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                    </div>
+
+        
+            </div>
+
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/downloading-a-csv-file-from-an-api-using-azure-data-factory">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+
+                <p class="spaced-bottom--none"><span itemprop="dateCreated">2020-09-07</span></p>
+                                    <p class="spaced-bottom--none">3,091 reads</p>
+                                <ul class="list--bare list--horizontal spaced-bottom--none">
+                    <li class="spaced-right--tight"><a href="https://www.sqlservercentral.com/forums/topic/downloading-a-csv-file-from-an-api-using-azure-data-factory">Discuss</a></li>
+                </ul>
+            </div>
+            
+</article>
+
+<!-- / template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/content-loop.php -->
+<article class="grid__row spaced-bottom post-listing__post">
+
+        <div class="grid__col grid__col--span-2-of-12">
+        
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/articles/azure-data-factory-your-first-data-pipeline" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.svg" alt="" /></a>
+    </div>
+    </div>
+
+    
+    <div class="grid__col grid__col--span-8-of-12">
+        <div class="padded-h padded-h--none--small">
+            <h1 class="beta">
+                                    <a href="https://www.sqlservercentral.com/articles/azure-data-factory-your-first-data-pipeline">Azure Data Factory : Your First Data Pipeline</a>
+                            </h1>
+
+                            <div class="post-listing__taxonomies">
+                    <ul class="post-listing__author list--horizontal list--bare display--inline">
+                        <li>by <a href="https://www.sqlservercentral.com/author/ramakant" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">ramakant</span></span></a></li>
+                    </ul>
+
+                                            <ul class="post-listing__sources list--horizontal list--bare display--inline">
+                            <li><a href="https://www.sqlservercentral.com">SQLServerCentral</a></li>
+                        </ul>
+                    
+                                            <ul class="post-listing__categories list--horizontal list--bare display--inline">
+                                                            <li><a href="https://www.sqlservercentral.com/categories/azure-data-factory">Azure Data Factory</a></li>
+                                                    </ul>
+                    
+                                    </div>
+            
+            <p>Introduction Azure Data Factory is the cloud-based ETL and data integration service that allows you to create data-driven workflows for orchestrating data movement and transforming data at scale. We can create and schedule data pipelines which can move data between various supported data stores. We can also use for data transformation before loading it into [&hellip;]</p>
+
+                            
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+            
+        </div>
+    </div>
+
+                        <div class="grid__col grid__col--span-2-of-12">
+                
+<div class="ssc-star-rating">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                    </div>
+
+        
+            </div>
+
+            <p class="ssc-star-rating__stats">
+            <span data-target="ssc-star-rating-score">5</span>
+            (<span data-target="ssc-star-rating-count">3</span>)
+        </p>
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/azure-data-factory-your-first-data-pipeline">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+
+                <p class="spaced-bottom--none"><span itemprop="dateCreated">2020-08-11</span></p>
+                                    <p class="spaced-bottom--none">4,351 reads</p>
+                                <ul class="list--bare list--horizontal spaced-bottom--none">
+                    <li class="spaced-right--tight"><a href="https://www.sqlservercentral.com/forums/topic/azure-data-factory-your-first-data-pipeline">Discuss</a></li>
+                </ul>
+            </div>
+            
+</article>
+
+<!-- / template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/content-loop.php -->
+<article class="grid__row spaced-bottom post-listing__post">
+
+        <div class="grid__col grid__col--span-2-of-12">
+        
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/articles/dynamically-process-ssas-cube-from-ssis-package" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.svg" alt="" /></a>
+    </div>
+    </div>
+
+    
+    <div class="grid__col grid__col--span-8-of-12">
+        <div class="padded-h padded-h--none--small">
+            <h1 class="beta">
+                                    <a href="https://www.sqlservercentral.com/articles/dynamically-process-ssas-cube-from-ssis-package">Dynamically process SSAS Cube from SSIS package</a>
+                            </h1>
+
+                            <div class="post-listing__taxonomies">
+                    <ul class="post-listing__author list--horizontal list--bare display--inline">
+                        <li>by <a href="https://www.sqlservercentral.com/author/aveek22" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">aveek22</span></span></a></li>
+                    </ul>
+
+                                            <ul class="post-listing__sources list--horizontal list--bare display--inline">
+                            <li><a href="https://www.sqlservercentral.com">SQLServerCentral</a></li>
+                        </ul>
+                    
+                                            <ul class="post-listing__categories list--horizontal list--bare display--inline">
+                                                            <li><a href="https://www.sqlservercentral.com/categories/analysis-services-ssas">Analysis Services (SSAS)</a></li>
+                                                            <li><a href="https://www.sqlservercentral.com/categories/integration-services-ssis">Integration Services (SSIS)</a></li>
+                                                    </ul>
+                    
+                                    </div>
+            
+            <p>Learn how you can modify an SSIS package to dynamically process SSAS cubes.</p>
+
+                            
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+            
+        </div>
+    </div>
+
+                        <div class="grid__col grid__col--span-2-of-12">
+                
+<div class="ssc-star-rating">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                    </div>
+
+        
+            </div>
+
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/dynamically-process-ssas-cube-from-ssis-package">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+
+                <p class="spaced-bottom--none"><span itemprop="dateCreated">2020-01-13</span></p>
+                                    <p class="spaced-bottom--none">4,106 reads</p>
+                                <ul class="list--bare list--horizontal spaced-bottom--none">
+                    <li class="spaced-right--tight"><a href="https://www.sqlservercentral.com/forums/topic/dynamically-process-ssas-cube-from-ssis-package">Discuss</a></li>
+                </ul>
+            </div>
+            
+</article>
+
+<!-- / template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/content-loop.php -->
+<article class="grid__row spaced-bottom post-listing__post">
+
+        <div class="grid__col grid__col--span-2-of-12">
+        
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/articles/modular-etl-architecture-design-in-ssis" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/technical-article.svg" alt="" /></a>
+    </div>
+    </div>
+
+    
+    <div class="grid__col grid__col--span-8-of-12">
+        <div class="padded-h padded-h--none--small">
+            <h1 class="beta">
+                                    <a href="https://www.sqlservercentral.com/articles/modular-etl-architecture-design-in-ssis">Modular ETL Architecture Design in SSIS</a>
+                            </h1>
+
+                            <div class="post-listing__taxonomies">
+                    <ul class="post-listing__author list--horizontal list--bare display--inline">
+                        <li>by <a href="https://www.sqlservercentral.com/author/aveek22" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">aveek22</span></span></a></li>
+                    </ul>
+
+                                            <ul class="post-listing__sources list--horizontal list--bare display--inline">
+                            <li><a href="https://www.sqlservercentral.com">SQLServerCentral</a></li>
+                        </ul>
+                    
+                                            <ul class="post-listing__categories list--horizontal list--bare display--inline">
+                                                            <li><a href="https://www.sqlservercentral.com/categories/etl-ssis-azure-data-factory">ETL/SSIS/Azure Data Factory</a></li>
+                                                            <li><a href="https://www.sqlservercentral.com/categories/integration-services-ssis">Integration Services (SSIS)</a></li>
+                                                    </ul>
+                    
+                                    </div>
+            
+            <p>Overview of ETL Architecture In a data warehouse, one of the main parts of the entire system is the ETL process. ETL is the system that reads data from the source system, transforms the data according to the business logic, and finally loads it into the warehouse. While fetching data from the sources can seem [&hellip;]</p>
+
+                            
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+            
+        </div>
+    </div>
+
+                        <div class="grid__col grid__col--span-2-of-12">
+                
+<div class="ssc-star-rating">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full  ssc-star-rating__star--active">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half  ssc-star-rating__star--active">★</span>
+                    </div>
+
+        
+            </div>
+
+            <p class="ssc-star-rating__stats">
+            <span data-target="ssc-star-rating-score">4</span>
+            (<span data-target="ssc-star-rating-count">2</span>)
+        </p>
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/articles/modular-etl-architecture-design-in-ssis">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+
+                <p class="spaced-bottom--none"><span itemprop="dateCreated">2019-10-21</span></p>
+                                    <p class="spaced-bottom--none">12,244 reads</p>
+                                <ul class="list--bare list--horizontal spaced-bottom--none">
+                    <li class="spaced-right--tight"><a href="https://www.sqlservercentral.com/forums/topic/modular-etl-architecture-design-in-ssis">Discuss</a></li>
+                </ul>
+            </div>
+            
+</article>
+
+<!-- / template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/ssc-related-content-list-item.php -->
+
+<!-- template-parts/content-loop.php -->
+<article class="grid__row spaced-bottom post-listing__post">
+
+        <div class="grid__col grid__col--span-2-of-12">
+        
+    <div class="thumbnail-container">
+        <a href="https://www.sqlservercentral.com/uploading-on-premises-data-as-json-to-azure-blob-storage-using-ssis" class="link-image flex flex-align--center flex-justify--center"><img src="https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-post-thumbnails/images/ssc.svg" alt="" /></a>
+    </div>
+    </div>
+
+    
+    <div class="grid__col grid__col--span-8-of-12">
+        <div class="padded-h padded-h--none--small">
+            <h1 class="beta">
+                                    <a href="https://www.sqlservercentral.com/uploading-on-premises-data-as-json-to-azure-blob-storage-using-ssis">Uploading On-Premises Data as JSON to Azure Blob Storage using SSIS</a>
+                            </h1>
+
+                            <div class="post-listing__taxonomies">
+                    <ul class="post-listing__author list--horizontal list--bare display--inline">
+                        <li>by <a href="https://www.sqlservercentral.com/author/epivaral" itemprop="url"><span itemprop="author" itemtype="http://schema.org/Person"><span itemprop="name">Eduardo Pivaral</span></span></a></li>
+                    </ul>
+
+                                            <ul class="post-listing__sources list--horizontal list--bare display--inline">
+                            <li><a href="http://www.sqlservercentral.com">SQLServerCentral.com</a></li>
+                        </ul>
+                    
+                                            <ul class="post-listing__categories list--horizontal list--bare display--inline">
+                                                            <li><a href="https://www.sqlservercentral.com/categories/azure">Azure</a></li>
+                                                            <li><a href="https://www.sqlservercentral.com/categories/azure-ssis-feature-pack">Azure SSIS Feature Pack</a></li>
+                                                            <li><a href="https://www.sqlservercentral.com/categories/integration-services-ssis">Integration Services (SSIS)</a></li>
+                                                    </ul>
+                    
+                                    </div>
+            
+            <p>Using Azure Feature Pack for Integration Services to access Blob storage from Azure into SSIS packages</p>
+
+                            
+<ul class="ssc-books-links">
+    
+    
+    
+    
+    
+    
+    
+    
+    </ul>
+
+            
+        </div>
+    </div>
+
+                        <div class="grid__col grid__col--span-2-of-12">
+                
+<div class="ssc-star-rating">
+
+    
+    <div class="ssc-star-rating__inner">
+
+        
+        <div class="ssc-star-rating__average">
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                                            <span class="ssc-star-rating__star ssc-star-rating__star--full ">★</span>
+                <span class="ssc-star-rating__star ssc-star-rating__star--half ">★</span>
+                    </div>
+
+        
+            </div>
+
+    
+        <p class="ssc-star-rating__login-notice">
+        <a href="/wp-login.php?redirect_to=https://www.sqlservercentral.com/uploading-on-premises-data-as-json-to-azure-blob-storage-using-ssis">Log in</a> or <a href="/wp-login.php?action=register">register</a> to rate
+    </p>
+</div>
+
+                <p class="spaced-bottom--none"><span itemprop="dateCreated">2019-04-23</span></p>
+                                    <p class="spaced-bottom--none">13 reads</p>
+                                <ul class="list--bare list--horizontal spaced-bottom--none">
+                    <li class="spaced-right--tight"><a href="https://www.sqlservercentral.com/forums/topic/accessing-azure-blob-storage-from-ssis">Discuss</a></li>
+                </ul>
+            </div>
+            
+</article>
+
+<!-- / template-parts/ssc-related-content-list-item.php -->
+    </div>
+</div>
+<!-- / template-parts/ssc-related-content-list.php -->
+
+<!-- FOOTER -->
+<footer>
+    <div class="band background-color--blue--9 color--white footer__graphs">
+        <div class="band__inner-container band__inner-container--tight grid">
+            <a href="https://monitor.red-gate.com/overviews/SQLMON-EC2-BM2/cluster/sscdbcluster.ssc.local/sql/ssc-db-n1%5C(local)" target="_blank" rel="noopener" class="flex" title="Take a peek into our servers">
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-12-of-12--medium flex flex-align--center">
+                    <img src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/header/ssc-logo.svg" alt="" class="logo">
+                    <img src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/header/ssc.svg" alt="" class="logo">
+                </div>
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-3-of-12--medium">
+                    <div class="padded-h--tight">
+                        <p class="zeta color--white spaced-bottom--none">CPU</p>
+                        <script>var cpuChartData = {"labels":[1605364803926,1605365299120,1605365794405,1605366290450,1605366801416,1605367296446,1605367792443,1605368288186,1605368800649,1605369295680,1605369790928,1605370286003,1605370797425,1605371292889,1605371788019,1605372283080,1605372793201,1605373288246,1605373783670,1605374281093,1605374792136,1605375287823,1605375783227,1605376278290,1605376788337,1605377283662,1605377779501,1605378275342,1605378786367,1605379282070,1605379778985,1605380274518,1605380785032,1605381280135,1605381775321,1605382270743,1605382781501,1605383277034,1605383773205,1605384268339,1605384778288,1605385273497,1605385768714,1605386279009,1605386774071,1605387269282,1605387765321,1605388275517,1605388770749,1605389266327,1605389761389,1605390271706,1605390768054,1605391264286,1605391760492,1605392271380,1605392768247,1605393264326,1605393759480,1605394269584,1605394765399,1605395260684,1605395755845,1605396266220,1605396761313,1605397257940,1605397753264,1605398264518,1605398760416,1605399257053,1605399754361,1605400249782,1605400761112,1605401256378,1605401751786,1605402247413,1605402759386,1605403254637,1605403750724,1605404246591,1605404756969,1605405252914,1605405748729,1605406243799,1605406753882,1605407249807,1605407747703,1605408242725,1605408738743,1605409248867,1605409744222,1605410239273,1605410750068,1605411245102,1605411741138,1605412236195,1605412746334,1605413241930,1605413736991,1605414232726,1605414743054,1605415238177,1605415733475,1605416228742,1605416740088,1605417236972,1605417736172,1605418231735,1605418727108,1605419237124,1605419734358,1605420229660,1605420725053,1605421235261,1605421730982,1605422227705,1605422724804,1605423220900,1605423731210,1605424227375,1605424723429,1605425218559,1605425729073,1605426224291,1605426719762,1605427215642,1605427726255,1605428221515,1605428716513,1605429214138,1605429724780,1605430219839,1605430714979,1605431225369,1605431720509,1605432216742,1605432711790,1605433222900,1605433717740,1605434212972,1605434708477,1605435218502,1605435713534,1605436208626,1605436704517,1605437215625,1605437712540,1605438207716,1605438703108,1605439213231,1605439708246,1605440203431,1605440713745,1605441208757,1605441704991,1605442200070,1605442710833,1605443206880,1605443702176,1605444198767,1605444708721,1605445205055,1605445700285,1605446195405,1605446691592,1605447201668,1605447697778,1605448193274,1605448689307,1605449200153,1605449695538,1605450191648,1605450688771,1605451199788],"dataSets":[{"label":"","data":[3.312049372961017,2.3451997841994303,3.9828669734031266,6.447888324760916,3.8472609892437637,3.756869439181109,2.4087377089573163,4.199822810239011,5.684860732476058,5.2368045564878045,2.9858022031466853,6.938257524919441,3.160612372990183,2.2047665001631307,4.0570938757022414,5.934410183513158,4.480394625865663,4.328048551588366,4.502534781619234,3.7132799297264945,4.596527212367604,3.0257096671699353,5.097641461040329,3.4473192484179704,4.494838679610603,3.0472386013836066,5.477621750128248,4.540898482167457,2.9796092514100736,4.8337265639611395,4.772417993250342,3.2170196466581,5.311366841731068,2.9377550537758923,4.105151677892904,4.639743492416644,5.27670092304274,3.4866192491081542,4.028504595314413,4.157652457900716,3.712459408431291,3.0708271653635673,3.1591264435590865,3.4860347933084803,5.45583835787751,4.0946868112125,5.383659926215937,5.532118650383258,3.1499580021333746,2.9408545414762353,3.0571410962000165,4.11777303660385,7.101087875265208,2.9247721974795704,3.2508409469918895,5.7257033113987905,2.37661136877837,5.280868913167446,5.676110217479236,2.873950534313884,4.15194262868837,4.217899824873859,3.439536294093607,4.286065552473383,3.8992075049871087,5.393808494846044,3.1138820922079335,5.367092351789394,6.94211088159809,3.750220974094272,3.944680304805536,5.093122122053873,3.1672926163343558,4.253949818077137,4.650520079588162,2.7202762259839455,5.030707757398904,8.153604955637368,5.355589128520896,7.303332488627645,5.542769082946426,5.660759528932088,4.47377002291843,4.751141799269034,2.374386213652995,3.107351128978812,3.876081523142752,4.6486215912224305,3.695449827618867,6.935348881311815,6.908321350163817,8.148623257264296,6.631432659930718,4.682048873294751,3.7598882928125814,4.4044801760451495,4.503983576560102,5.16147915306947,5.714651463089416,3.543109845682523,4.8708697509474,4.324999011785851,4.233958104176394,3.72983644460812,4.370747710549919,2.9846147614334573,3.0822730145692723,2.9531624366250475,3.468819543512227,3.172767750813062,5.295706182175272,8.337317533508118,14.460571515729631,17.85883705114913,17.86226157640097,24.523989967613332,13.534386093839124,13.484185292273354,17.80205568286086,20.585233887832626,17.580156474133677,9.80014905059598,16.265400774365883,17.14009794965607,13.999844185580828,13.017424102544467,7.294775560895536,13.609071400198092,4.603479334431689,3.521807810836039,4.469323057048762,2.9557725909928014,3.0318144272593455,4.0031381628552625,2.2152858356790937,5.892047623200258,4.817628813538806,7.989275882533514,2.6764511600508594,6.155177379196123,3.793086022506389,3.6035329066151265,3.0865269504164026,3.068400157385267,3.0213085581209773,4.788165116655055,4.752361652679928,3.2623396456944516,3.3732732404094015,3.8160954384625247,2.434429051294022,4.3477291885815585,6.090002866612664,3.344690297960732,5.171377126455209,2.668451244110965,4.581072415214535,2.85814141565041,4.838100981992384,4.085667619244719,5.955268185944754,8.702486713809126,5.975760597832741,7.3167183178713024,4.2574642436996495,4.615204164192856,6.311597550006523,4.846002425138993,4.601740371318825,5.726180270725873,5.7854270965386645,8.355629272338756,6.002121252132697,2.8550613606621495],"colour":"42, 94, 157"}],"chart":"cpu"};</script><div
+        id="chart--cpu"
+        height="66"
+        class="js-chart"
+        data-chart-type="line"
+        data-chart-source="cpuChartData"
+        data-chart-colour-opacity="1"
+        data-chart-vertical-gridlines="false"
+        data-chart-horizontal-gridlines="false"
+        data-chart-legend="false"
+        data-chart-horizontal-axis="false"
+        data-chart-vertical-axis="false"
+        data-chart-animation="false"
+        data-chart-point-radius="0"
+        data-chart-tooltips="false"
+    ></div>                    </div>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-3-of-12--medium">
+                    <div class="padded-h--tight">
+                        <p class="zeta color--white spaced-bottom--none">Memory</p>
+                        <script>var memoryChartData = {"labels":[1605364293528,1605364803916,1605365299111,1605365794396,1605366290440,1605366801406,1605367296436,1605367792434,1605368288176,1605368800639,1605369295670,1605369790919,1605370285994,1605370797416,1605371292880,1605371788010,1605372283069,1605372793192,1605373288237,1605373783662,1605374281084,1605374792127,1605375287813,1605375783218,1605376278281,1605376788327,1605377283653,1605377779492,1605378275321,1605378786357,1605379282061,1605379778976,1605380274509,1605380785015,1605381280126,1605381775312,1605382270733,1605382781487,1605383277025,1605383773196,1605384268329,1605384778277,1605385273487,1605385768673,1605386278999,1605386774060,1605387269271,1605387765310,1605388275506,1605388770740,1605389266316,1605389761379,1605390271695,1605390768043,1605391264277,1605391760483,1605392271368,1605392768231,1605393264316,1605393759471,1605394269523,1605394765389,1605395260674,1605395755824,1605396266211,1605396761303,1605397257930,1605397753254,1605398264509,1605398760406,1605399257044,1605399754352,1605400249772,1605400761103,1605401256367,1605401751777,1605402247403,1605402759372,1605403254628,1605403750713,1605404246581,1605404756958,1605405252904,1605405748719,1605406243789,1605406753872,1605407249797,1605407747692,1605408242716,1605408738726,1605409248857,1605409744213,1605410239263,1605410750059,1605411245092,1605411741129,1605412236185,1605412746324,1605413241920,1605413736981,1605414232716,1605414743044,1605415238167,1605415733466,1605416228733,1605416740074,1605417236962,1605417736163,1605418231725,1605418727099,1605419237114,1605419734348,1605420229650,1605420725041,1605421235251,1605421730972,1605422227695,1605422724795,1605423220891,1605423731201,1605424227360,1605424723414,1605425218549,1605425729061,1605426224276,1605426719654,1605427215632,1605427726236,1605428221504,1605428716503,1605429214127,1605429724771,1605430219829,1605430714969,1605431225359,1605431720499,1605432216731,1605432711781,1605433222879,1605433717730,1605434212962,1605434708467,1605435218492,1605435713524,1605436208614,1605436704506,1605437215614,1605437712530,1605438207706,1605438703097,1605439213220,1605439708236,1605440203421,1605440713735,1605441208747,1605441704982,1605442200005,1605442710823,1605443206870,1605443702166,1605444198750,1605444708711,1605445205041,1605445700275,1605446195395,1605446691583,1605447201659,1605447697762,1605448193262,1605448689297,1605449200142,1605449695529,1605450191638,1605450688762,1605451199778],"dataSets":[{"label":"","data":[53649661952,53646540800,53649588224,53660499968,53662466048,53660123136,53657059328,53663391744,53662949376,53661622272,53664038912,53664342016,53660917760,53663956992,53664620544,53664063488,53655920640,53655519232,53651988480,53651456000,53651963904,53655896064,53656584192,53655584768,53656141824,53656133632,53654888448,53652430848,53653864448,53652455424,53653716992,53653553152,53654011904,53655715840,53651365888,53661220864,53657518080,53652889600,53658976256,53664841728,53664997376,53664636928,53664669696,53664931840,53661220864,53663039488,53664604160,53665128448,53668192256,53664210944,53661818880,53662400512,53661704192,53661409280,53663907840,53665939456,53665538048,53668364288,53666209792,53664702464,53662277632,53658542080,53657722880,53657780224,53657739264,53656256512,53663244288,53665579008,53664022528,53661188096,53660581888,53660172288,53659762688,53658853376,53654446080,53664555008,53664833536,53653438464,53653569536,53657583616,53649227776,53647179776,53662384128,53666086912,53662384128,53654028288,53651587072,53645066240,53655592960,53659918336,53655945216,53651013632,53654765568,53669748736,53666807808,53663481856,53660565504,53660884992,53659779072,53662302208,53666324480,53666242560,53664325632,53662179328,53657812992,53661696000,53658673152,53659377664,53659377664,53658558464,53662597120,53662392320,53657223168,53687328768,53682888704,53685624832,53671575552,53665570816,53657419776,53652054016,53644189696,53640732672,53640765440,53639675904,53638709248,53638471680,53638176768,53646409728,53648580608,53653872640,53668937728,53668642816,53671632896,53672550400,53671264256,53669150720,53665013760,53669855232,53665300480,53672230912,53666922496,53671608320,53672206336,53671788544,53672181760,53671174144,53670592512,53670559744,53671059456,53670821888,53672624128,53666349056,53662171136,53658451968,53658157056,53658730496,53653487616,53652791296,53666103296,53671903232,53672271872,53667061760,53666463744,53666562048,53672353792,53669249024,53668036608,53668323328,53670756352,53666996224,53669085184,53665079296,53664718848,53664358400,53664710656],"colour":"42, 94, 157"}],"chart":"memory"};</script><div
+        id="chart--memory"
+        height="66"
+        class="js-chart"
+        data-chart-type="line"
+        data-chart-source="memoryChartData"
+        data-chart-colour-opacity="1"
+        data-chart-vertical-gridlines="false"
+        data-chart-horizontal-gridlines="false"
+        data-chart-legend="false"
+        data-chart-horizontal-axis="false"
+        data-chart-vertical-axis="false"
+        data-chart-animation="false"
+        data-chart-point-radius="0"
+        data-chart-tooltips="false"
+    ></div>                    </div>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-3-of-12--medium">
+                    <div class="padded-h--tight">
+                        <p class="zeta color--white spaced-bottom--none">Disk I/O</p>
+                        <script>var diskChartData = {"labels":[1605364802538,1605365282562,1605365792614,1605366302911,1605366783727,1605367293817,1605367773846,1605368283956,1605368794126,1605369274141,1605369785202,1605370296016,1605370776138,1605371286169,1605371796231,1605372277089,1605372787664,1605373267710,1605373778040,1605374288432,1605374768443,1605375279055,1605375789099,1605376269114,1605376779159,1605377289503,1605377769532,1605378279563,1605378760442,1605379270468,1605379780537,1605380261885,1605380772586,1605381282600,1605381763254,1605382273534,1605382783548,1605383263561,1605383773684,1605384253713,1605384764743,1605385274757,1605385754786,1605386264941,1605386775095,1605387255156,1605387765294,1605388275309,1605388755380,1605389265617,1605389775631,1605390256192,1605390766831,1605391247625,1605391757655,1605392267700,1605392748510,1605393258524,1605393768601,1605394248614,1605394758629,1605395268658,1605395748687,1605396258762,1605396738791,1605397248842,1605397758852,1605398238986,1605398749348,1605399260688,1605399740836,1605400250995,1605400761412,1605401241528,1605401751672,1605402232347,1605402743347,1605403253556,1605403734154,1605404244228,1605404755693,1605405235924,1605405746648,1605406226698,1605406736722,1605407247015,1605407728228,1605408238893,1605408749029,1605409229238,1605409739532,1605410249566,1605410729580,1605411239972,1605411719986,1605412230035,1605412740049,1605413220517,1605413730533,1605414240550,1605414721294,1605415231361,1605415741531,1605416222437,1605416732967,1605417212982,1605417723075,1605418233715,1605418713729,1605419223745,1605419733838,1605420213852,1605420723992,1605421234134,1605421714146,1605422224177,1605422734223,1605423214241,1605423724612,1605424204735,1605424715531,1605425225640,1605425705686,1605426216483,1605426726685,1605427206699,1605427716714,1605428226745,1605428706759,1605429216852,1605429698341,1605430209346,1605430719384,1605431199662,1605431710284,1605432220943,1605432700970,1605433211000,1605433721551,1605434202126,1605434712579,1605435192852,1605435702919,1605436213918,1605436694089,1605437204973,1605437715010,1605438196106,1605438707501,1605439187553,1605439698038,1605440208626,1605440689597,1605441199612,1605441709920,1605442190268,1605442700360,1605443180874,1605443691483,1605444201670,1605444681770,1605445191808,1605445702324,1605446182369,1605446692384,1605447202430,1605447682697,1605448193204,1605448703319,1605449183506,1605449694988,1605450175316,1605450685517,1605451196252],"dataSets":[{"label":"","data":[1954474.1459739013,1118924.8660489344,1658070.097941226,3870751.700010985,4669732.150792269,1338104.82269814,1790320.7537034147,1743603.3790602623,1521476.0057074907,1480086.34328765,1384338.968655308,3760331.8542756983,1641123.1998222799,1121006.9394695978,1464923.271320795,4013475.870337176,1471519.0527216247,1324319.6126563943,1826794.3077968378,1413168.3341633885,3900783.7061715256,2274465.9377376847,1292216.3580104436,1177572.0190329708,1716270.8809194542,1597066.448511307,6697491.011221858,1141048.611333467,1366478.242970595,1265977.3227224755,1479319.1084344466,1134504.1413989752,3865376.478244258,1735853.1894092495,4119530.38790321,1601930.1542945816,1941088.8687911532,4771675.19434147,1872099.4877762469,2208582.506575202,1319219.9478248027,1226485.4508264977,1096084.1565555425,3674332.1754669305,1435453.9142020019,1433667.8707938115,1426401.7128051126,6220054.244706351,1568920.299888962,1186379.2227754195,1669245.0890750696,1609854.4875886408,1494314.6016061986,3609445.861682662,3341083.1952199014,4454663.085813334,1888788.645694571,4005291.765839425,1198870.9624527858,3818987.406557011,4181040.1929697627,1429054.7747979355,4735472.6603979785,2291515.172084782,3771162.372340235,3344382.7419110485,1276460.5553542166,1147114.6687535823,1650777.7391002912,3394403.956495612,1172330.8168941233,1036906.7929753821,1522136.0848444547,1644513.3801036533,1933536.0151842597,2595456.2237943346,1288267.317530852,11421363.994296366,3595047.0853796173,1661411.257707,6245389.549685768,1179012.2153122379,1513250.760081653,2269439.7466768324,1393475.9225883782,1153187.2440205386,1839550.5522116793,1621383.6427068429,3822944.6003633896,1762685.9206060707,2170774.451917433,6956807.22228912,3662732.7422652505,6598833.841859263,1204539.921268954,1305670.6116429595,1245711.1808469375,1969629.3235726692,1089703.046466405,4046899.173102406,3587384.4352766233,1158156.9817992195,3636616.636143302,1108342.9861384295,3700756.1615083776,1540791.2232197323,1498312.5889720684,928247.4096681762,1372748.8398900384,1811628.893826768,1461114.4234991535,29881954.015410475,56329822.51028296,126278064.8372147,75072085.74691515,20679541.239253808,9370573.58329042,4258813.660555044,6615858.586179031,27281401.646337993,37585199.7583047,41059254.72755351,50830226.22280046,44164145.237475686,38901990.369110495,28938044.328199532,30248092.90112034,16073784.465440053,3000612.031241243,1385023.7159540507,1093936.3391922305,1714320.2623143725,3690764.068838408,5089576.644631698,1627402.3308099052,2008605.2503241722,3992905.334393563,1129860.1692197418,1373535.9977942752,1527429.234442205,1356921.8832852999,3674450.5782373766,4240715.46895607,1832928.114560487,2122739.7642348,2214776.0496830763,1084033.2584636868,3761794.616928757,1028887.7540666237,1229805.6332392902,786767.087089627,1172367.0292292114,3864019.2836624733,962869.4552257915,1381072.7153346867,997783.9977010901,2584074.6085876096,1797330.4858985082,1612350.8542561287,1323613.6975526414,3474236.721391499,3694425.974393257,1254333.5813130215,1052076.538532615,1262388.9554857737,1743120.8843660357,1147862.5099516532,3643152.4258019174,1088658.470049759,3853398.987164758,1216846.4078283121,6854726.253913182,3848170.6011409275,1378161.3605206334],"colour":"42, 94, 157"}],"chart":"disk"};</script><div
+        id="chart--disk"
+        height="66"
+        class="js-chart"
+        data-chart-type="line"
+        data-chart-source="diskChartData"
+        data-chart-colour-opacity="1"
+        data-chart-vertical-gridlines="false"
+        data-chart-horizontal-gridlines="false"
+        data-chart-legend="false"
+        data-chart-horizontal-axis="false"
+        data-chart-vertical-axis="false"
+        data-chart-animation="false"
+        data-chart-point-radius="0"
+        data-chart-tooltips="false"
+    ></div>                    </div>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-3-of-12--medium">
+                    <div class="padded-h--tight">
+                        <p class="zeta color--white spaced-bottom--none">Waits</p>
+                        <script>var waitsChartData = {"labels":[1605364710843,1605365190830,1605365790920,1605366270903,1605366752687,1605367232763,1605367712750,1605368193263,1605368792747,1605369273340,1605369752933,1605370232873,1605370712793,1605371192797,1605371793307,1605372273340,1605372753370,1605373233340,1605373713763,1605374193793,1605374793807,1605375273900,1605375753840,1605376233870,1605376713950,1605377193870,1605377674013,1605378273917,1605378754087,1605379233947,1605379713997,1605380194560,1605380674073,1605381274290,1605381754163,1605382234493,1605382714183,1605383194247,1605383674277,1605384274227,1605384754227,1605385234307,1605385714963,1605386195917,1605386675997,1605387276540,1605387756680,1605388236600,1605388716570,1605389196557,1605389676930,1605390157150,1605390757023,1605391237040,1605391716977,1605392197587,1605392677603,1605393157807,1605393757927,1605394237867,1605394717833,1605395197867,1605395677990,1605396157977,1605396758050,1605397239880,1605397717897,1605398198083,1605398678210,1605399158023,1605399758143,1605400238317,1605400718490,1605401198427,1605401678460,1605402158460,1605402758283,1605403238313,1605403718457,1605404198427,1605404678677,1605405158630,1605405638740,1605406238720,1605406718610,1605407198707,1605407678830,1605408158863,1605408638957,1605409238953,1605409719030,1605410198877,1605410680423,1605411159987,1605411640033,1605412240107,1605412720233,1605413200187,1605413680250,1605414160140,1605414640610,1605415240573,1605415720590,1605416200543,1605416681530,1605417161560,1605417641593,1605418121907,1605418721997,1605419201980,1605419682170,1605420162280,1605420642137,1605421123200,1605421722730,1605422203277,1605422683323,1605423163777,1605423643293,1605424123120,1605424722930,1605425203230,1605425683413,1605426163253,1605426643940,1605427123290,1605427723430,1605428203727,1605428683167,1605429163773,1605429643807,1605430123823,1605430723867,1605431203837,1605431684070,1605432163850,1605432644397,1605433123863,1605433603940,1605434203990,1605434684023,1605435164007,1605435644040,1605436124040,1605436604070,1605437204053,1605437684130,1605438164240,1605438644287,1605439124240,1605439604163,1605440205363,1605440685380,1605441165490,1605441645520,1605442125443,1605442605523,1605443205423,1605443686097,1605444165613,1605444645630,1605445125583,1605445605740,1605446205753,1605446685783,1605447165880,1605447645880,1605448126550,1605448606503,1605449086647,1605449686643,1605450166563,1605450647143,1605451126613],"dataSets":[{"label":"","data":[6.82837299518218,11.71490061189157,11.87988468396407,21.919526316557047,27.308918519502516,5.921979019988502,10.352363709850474,15.8455650523503,25.09825116266656,18.986959860006284,11.837120224857324,47.985164812268195,5.298799799966661,2.497895850867909,14.790761186324955,44.32820243608253,20.802866487511196,16.976061003812738,12.436956598664095,8.739037143511865,19.311216071624994,4.8886361600773185,26.1261824394716,4.718455096556465,20.323696050658224,3.465160860143357,35.05830554647261,10.948418413612844,7.970093925068205,25.8096111365815,15.942089365691073,6.613076745400708,15.286342601764709,14.499755921608351,19.659368207838327,121.84331605354653,47.353499134857934,21.467970937208374,22.011124304730956,11.967663971997665,15.535416666666665,3.0244959173471093,15.974002196997436,22.103984996486147,39.62881186468922,8.728767132411834,23.934685716665975,72.0890981830305,9.886034543825655,6.012662842951996,6.730186750712468,27.812252717504478,47.600075349282264,15.07446611265851,3.250426618493677,28.87164228792576,4.762341255291491,23.362987397022927,35.38625608211691,18.791932324873944,30.391736081305762,17.238362282671645,24.606194662617703,21.675587047149197,24.258715189651927,48.066745532656746,12.83845553610018,5.343762625316024,62.46472287540588,28.70493296346702,7.406851962940745,21.236051931174952,9.282071253485721,26.759762218791217,79.47370284959575,7.135416666666665,23.723665147885296,59.15463616857279,32.26740311239961,64.49986457486926,34.65278500780843,50.47160867834975,9.77276040907292,13.107103570119003,8.21855008439434,10.866554050535623,9.601706229445371,40.55137875937696,26.79683561969114,103.51402342682285,77.49798469828798,59.060492198554954,29.46758980450466,34.19355914956085,18.554471863113122,7.7607095124934595,21.423542986632675,14.378461269204966,26.888137598606846,30.169413824001342,18.39657002518367,20.641272878494178,21.076336879735507,13.784683083551931,28.25648094439143,1.9519613357498493,12.688710984453149,3.5539251406371664,16.125914446166405,11.790000895865061,8.125950144734375,17.783424631855198,22.352492513394616,31.23915162878875,54.6244558237286,283.15648625420613,150.85637626394137,124.01811619842897,154.34521475821455,404.73754082200463,438.35547923509114,80.74953154278576,503.39766297432436,450.62312437479164,179.39740413200272,351.0441222488787,42.48175425733996,141.22511695888167,21.210161855498082,9.30699991261033,22.481740876687898,26.87202093263558,22.931651678876882,12.857053565847869,3.275493354267616,22.968860727833587,26.361625397723845,47.67387051428048,26.166635768845417,25.0562453128906,21.121464565977753,12.548334944498151,5.868346551174607,12.225,12.428389892298396,29.155826081738986,21.759009492227285,11.007894024286102,9.23659558334913,3.925384360551971,12.929157385663952,12.490019960079838,45.244230933487785,5.544562704380247,15.042809824385976,17.079823221641806,17.26795534077654,7.181196866144358,16.451898792112747,15.480192527465194,25.809502580116956,20.633270341054228,19.9372288647255,37.647517637117865,7.507864091827595,11.955917241724068,35.28125,62.4128820188487,23.433544534569013,31.376003865507013,20.953473023153485,60.526754459076514,33.23484123350951,9.09963084238847],"colour":"42, 94, 157"}],"chart":"waits"};</script><div
+        id="chart--waits"
+        height="66"
+        class="js-chart"
+        data-chart-type="line"
+        data-chart-source="waitsChartData"
+        data-chart-colour-opacity="1"
+        data-chart-vertical-gridlines="false"
+        data-chart-horizontal-gridlines="false"
+        data-chart-legend="false"
+        data-chart-horizontal-axis="false"
+        data-chart-vertical-axis="false"
+        data-chart-animation="false"
+        data-chart-point-radius="0"
+        data-chart-tooltips="false"
+    ></div>                    </div>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-12 grid__col--span-12-of-12--medium text--right flex flex-align--center flex-justify--end">Take a peek into our servers</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="band background-color--blue--8 color--white footer__menu">
+        <div class="band__inner-container padded-v--loose padded-h--tight grid flex">
+            <div class="grid__col grid__col--span-9-of-12 grid__col--span-12-of-12--medium flex flex-align--center">
+                <ul id="menu-footer-menu" class="list--horizontal spaced-bottom--none"><li id="menu-item-22" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-22 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/about">About SQLServerCentral</a></li>
+<li id="menu-item-3673197" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-3673197 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/contact-us">Contact Us</a></li>
+<li id="menu-item-24" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-24 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/terms">Terms of Use</a></li>
+<li id="menu-item-26" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-26 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/privacy">Privacy Policy</a></li>
+<li id="menu-item-28" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-28 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/contribute">Contribute</a></li>
+<li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-30 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/contributors">Contributors</a></li>
+<li id="menu-item-3425913" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-3425913 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/author">Authors</a></li>
+<li id="menu-item-3426090" class="menu-item menu-item-type-post_type menu-item-object-page spaced-bottom--none spaced-right menu-item-3426090 spaced-bottom--none spaced-right--tight"><a href="https://www.sqlservercentral.com/newsletter-archive">Newsletters</a></li>
+</ul>            </div>
+
+            <div class="grid__col grid__col--span-2-of-12 grid__col--push-1-of-12 grid__col--span-12-of-12--medium grid__col--push-0-of-12--medium flex flex-align--center flex-justify--end">
+                <a href="https://www.red-gate.com/" target="_blank" class="link-image"><img src="https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/images/footer/redgate.svg" alt=""/></a>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- / FOOTER -->
+
+<script type='text/javascript'>
+/* <![CDATA[ */
+var ssc_utilities_ajax_combined_data = {"ajax_url":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-utilities/js/ajax-combined.min.js?ver=2020-06-03'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-performance/js/ssc-lazy-load.min.js'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var ssc_related_forum_topics_top_comments_data = {"ajax_url":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php","post_id":"3796899"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-related-forum-topics/js/top-comments.min.js?ver=2020-06-03'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var ssc_star_ratings_data = {"ajax_url":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-star-ratings/js/interactive.min.js?ver=2020-06-03'></script>
+<script type='text/javascript' defer src='https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql&#038;lang=vb'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-syntax-highlighting/inc/lexers/lang-vs.js'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var ssc_visitor_counter_data = {"ajax_url":"https:\/\/www.sqlservercentral.com\/wp-admin\/admin-ajax.php","post_id":"3796899","is_singular":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/mu-plugins/ssc/ssc-visitor-counter/js/ssc-visitor-counter.min.js?ver=2020-06-03'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/bbpress/templates/default/js/editor.js?ver=2.5.14-6684'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var SSC2018 = {"templateUrl":"https:\/\/www.sqlservercentral.com\/wp-content\/themes\/ssc-twentyeighteen"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/themes/ssc-twentyeighteen/js/sqlservercentral.min.js?ver=2020-06-03'></script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/gd-bbpress-attachments/js/front.js?ver=3.1_b2302_free'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var newsletter = {"messages":{"email_error":"Email address is not correct","name_error":"Name is required","surname_error":"Last name is required","privacy_error":"You must accept the privacy policy"},"profile_max":"20"};
+/* ]]> */
+</script>
+<script type='text/javascript' defer src='https://www.sqlservercentral.com/wp-content/plugins/newsletter/subscription/validate.js?ver=5.8.9'></script>
+<script type='text/javascript' src='https://www.sqlservercentral.com/wp-includes/js/wp-embed.min.js?ver=5.1.1'></script>
+
+</body>
+</html>
+
+<!--
+Performance optimized by W3 Total Cache. Learn more: https://www.w3-edge.com/products/
+
+Page Caching using redis 
+
+Served from: sqlservercentral.com @ 2020-11-15 23:25:25 by W3 Total Cache
+-->
